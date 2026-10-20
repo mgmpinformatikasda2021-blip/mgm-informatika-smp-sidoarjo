@@ -1,0 +1,2835 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGMP Informatika SMP Kabupaten Sidoarjo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HTML5-QRCode Scanner for QR Attendance -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#1e40af', // Blue deep Sidoarjo
+                            600: '#1d4ed8',
+                            700: '#1e3a8a',
+                            800: '#172554',
+                            gold: '#f59e0b',
+                            emerald: '#059669',
+                            cyan: '#06b6d4',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+<!-- Header Navigasi -->
+<header class="glass-header sticky top-0 z-40 border-b border-slate-200 shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-20">
+            <!-- Brand & Identitas Logo Sidoarjo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('public'); switchTab('beranda');">
+                <div id="headerLogoContainer" class="w-12 h-12 flex-shrink-0 bg-gradient-to-tr from-brand-700 via-blue-600 to-cyan-500 rounded-xl p-1.5 shadow-md shadow-blue-500/20 flex items-center justify-center">
+                    <!-- Default SVG Logo MGMP Informatika Kab Sidoarjo -->
+                    <svg viewBox="0 0 100 100" class="w-full h-full text-white fill-current" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="8 4"/>
+                        <path d="M50 20 L75 35 L75 65 L50 80 L25 65 L25 35 Z" fill="#ffffff" fill-opacity="0.15" stroke="currentColor" stroke-width="3"/>
+                        <!-- Ikon Udang & Bandeng Simbolis / Sirkuit Informatika -->
+                        <path d="M40 38 Q50 28 60 38 T50 54 Z" fill="#f59e0b"/>
+                        <path d="M35 55 Q50 68 65 55 Q50 78 35 55" fill="#38bdf8"/>
+                        <circle cx="50" cy="45" r="4" fill="#ffffff"/>
+                        <path d="M30 50 H20 M80 50 H70 M50 20 V12 M50 88 V80" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 id="brandTitle" class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-tight">MGMP INFORMATIKA SMP</h1>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-100 text-brand-700 border border-blue-200">KAB. SIDOARJO</span>
+                    </div>
+                    <p id="brandSub" class="text-xs text-slate-500 hidden sm:block">Wadah Edukatif & Kolaboratif Guru Informatika Kabupaten Sidoarjo</p>
+                </div>
+            </div>
+
+            <!-- Mode Selector & Profile Action -->
+            <div class="flex items-center gap-3">
+                <!-- Notifikasi Undangan Baru Indicator -->
+                <div class="relative cursor-pointer" onclick="switchTab('undangan');" title="Pemberitahuan Undangan Baru">
+                    <button class="relative p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                        <i class="fa-regular fa-bell text-lg"></i>
+                        <span id="navNotifBadge" class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white animate-pulse">1</span>
+                    </button>
+                </div>
+
+                <!-- Tombol Switch Publik / Admin -->
+                <div id="authBtnContainer">
+                    <button onclick="openLoginModal()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-700 hover:bg-brand-800 text-white font-medium text-xs sm:text-sm shadow-md shadow-brand-700/25 transition">
+                        <i class="fa-solid fa-lock text-xs text-amber-300"></i>
+                        <span>Login Admin</span>
+                    </button>
+                </div>
+                <div id="adminUserBadge" class="hidden items-center gap-2">
+                    <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-semibold border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        Admin Terotentikasi
+                    </span>
+                    <button onclick="logoutAdmin()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs sm:text-sm font-semibold border border-rose-200 transition">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span class="hidden sm:inline">Keluar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="flex-grow">
+    <!-- ==================== DASHBOARD UMUM (PUBLIC VIEW) ==================== -->
+    <section id="publicView" class="block pb-16">
+        <!-- Hero Banner Khas MGMP -->
+        <div class="relative bg-gradient-to-br from-brand-800 via-blue-900 to-slate-900 text-white overflow-hidden py-10 sm:py-14 border-b border-blue-950">
+            <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px]"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="max-w-2xl">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-cyan-300 backdrop-blur-sm border border-white/10 mb-3">
+                            <i class="fa-solid fa-award text-amber-400"></i> Portal Resmi MGMP Informatika SMP Kab. Sidoarjo
+                        </span>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-2">
+                            Transformasi Digital Guru Informatika SMP Sidoarjo
+                        </h2>
+                        <p id="heroSekretariat" class="text-sm sm:text-base text-slate-300">
+                            Sekretariat: SMP Negeri 1 Sidoarjo, Jl. Ponti No. 09, Magersari, Sidoarjo - Jawa Timur
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5">
+                        <button onclick="switchTab('presensi')" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 flex items-center gap-2 transition transform active:scale-95">
+                            <i class="fa-solid fa-qrcode text-base"></i> Presensi Kehadiran
+                        </button>
+                        <button onclick="switchTab('sertifikat')" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium text-xs sm:text-sm border border-white/20 flex items-center gap-2 backdrop-blur-sm transition">
+                            <i class="fa-solid fa-certificate text-cyan-400"></i> Unduh Sertifikat
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tab Menu Umum -->
+        <div class="bg-white border-b border-slate-200 sticky top-20 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex space-x-1 sm:space-x-3 overflow-x-auto py-3 custom-scrollbar text-xs sm:text-sm font-medium">
+                    <button onclick="switchTab('pengurus')" id="tab-pengurus" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-sitemap text-blue-600"></i> Susunan Pengurus
+                    </button>
+                    <button onclick="switchTab('pembina')" id="tab-pembina" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-user-shield text-indigo-600"></i> Pembina
+                    </button>
+                    <button onclick="switchTab('anggota')" id="tab-anggota" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-users text-emerald-600"></i> Daftar Anggota
+                    </button>
+                    <button onclick="switchTab('proker')" id="tab-proker" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-calendar-check text-cyan-600"></i> Program Kerja
+                    </button>
+                    <button onclick="switchTab('agenda')" id="tab-agenda" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-calendar-days text-amber-600"></i> Agenda
+                    </button>
+                    <button onclick="switchTab('laporan')" id="tab-laporan" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-lines text-teal-600"></i> Laporan
+                    </button>
+                    <button onclick="switchTab('sertifikat')" id="tab-sertifikat" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-shield text-purple-600"></i> Sertifikat
+                    </button>
+                    <button onclick="switchTab('presensi')" id="tab-presensi" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-qrcode text-rose-600"></i> Presensi QR
+                    </button>
+                    <button onclick="switchTab('rekap')" id="tab-rekap" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-clipboard-user text-sky-600"></i> Rekap Absen
+                    </button>
+                    <button onclick="switchTab('notulen')" id="tab-notulen" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-book-open text-orange-600"></i> Notulen
+                    </button>
+                    <button onclick="switchTab('undangan')" id="tab-undangan" class="tab-btn px-3 py-2 rounded-lg text-slate-600 hover:text-brand-700 hover:bg-slate-100 whitespace-nowrap flex items-center gap-1.5 transition relative">
+                        <i class="fa-solid fa-envelope-open-text text-red-600"></i> Undangan
+                        <span id="tabNotifDot" class="w-2 h-2 rounded-full bg-red-500 inline-block animate-ping"></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+
+            <!-- 1. Susunan Pengurus (Read Only) -->
+            <div id="content-pengurus" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-sitemap text-brand-600"></i> Struktur & Susunan Pengurus MGMP
+                            </h3>
+                            <p class="text-xs text-slate-500">Masa Bakti Resmi MGMP Informatika SMP Kabupaten Sidoarjo</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6" id="publicPengurusGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Daftar Pembina (Read Only) -->
+            <div id="content-pembina" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-user-shield text-indigo-600"></i> Daftar Pembina MGMP
+                            </h3>
+                            <p class="text-xs text-slate-500">Pengawas dan Koordinator Pembina Dinas Pendidikan Kab. Sidoarjo</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6" id="publicPembinaGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Daftar Anggota (Read Only) -->
+            <div id="content-anggota" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-users text-emerald-600"></i> Data Anggota Guru Informatika
+                            </h3>
+                            <p class="text-xs text-slate-500">Guru Informatika SMP Negeri dan Swasta se-Kabupaten Sidoarjo</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="relative">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                <input type="text" id="searchAnggotaPublic" onkeyup="renderPublicAnggota()" placeholder="Cari nama/sekolah..." class="text-xs pl-8 pr-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 w-48 sm:w-64">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto mt-4">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3 px-4">No</th>
+                                    <th class="py-3 px-4">NIP / NUPTK</th>
+                                    <th class="py-3 px-4">Nama Lengkap</th>
+                                    <th class="py-3 px-4">L/P</th>
+                                    <th class="py-3 px-4">Asal Sekolah</th>
+                                    <th class="py-3 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publicAnggotaTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Program Kerja (Read Only) -->
+            <div id="content-proker" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-check text-cyan-600"></i> Program Kerja Tahunan
+                            </h3>
+                            <p class="text-xs text-slate-500">Rencana Kerja Pengembangan Keprofesian Berkelanjutan (PKB) Guru</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4" id="publicProkerList">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Agenda Kegiatan (Read Only) -->
+            <div id="content-agenda" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-amber-600"></i> Agenda & Jadwal Pertemuan
+                            </h3>
+                            <p class="text-xs text-slate-500">Jadwal kegiatan rutin, workshop, dan diseminasi kurikulum</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6" id="publicAgendaGrid">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Laporan Kegiatan (Preview & Download PDF) -->
+            <div id="content-laporan" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-file-lines text-teal-600"></i> Laporan Pertanggungjawaban Kegiatan
+                            </h3>
+                            <p class="text-xs text-slate-500">Pratinjau dan unduh berkas laporan hasil pelaksanaan kegiatan</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-3" id="publicLaporanList">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Sertifikat (Preview, Download) -->
+            <div id="content-sertifikat" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-file-shield text-purple-600"></i> Unduh E-Sertifikat Kegiatan
+                            </h3>
+                            <p class="text-xs text-slate-500">Ketikkan NIP atau Nama Peserta untuk mencari dan mengunduh sertifikat berbarcode</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 max-w-xl">
+                        <div class="flex gap-2">
+                            <input type="text" id="certSearchQuery" placeholder="Masukkan NIP atau Nama Guru..." class="flex-grow text-xs sm:text-sm px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:outline-none">
+                            <button onclick="searchCertificate()" class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs sm:text-sm font-semibold shadow-md shadow-purple-600/20 transition">
+                                <i class="fa-solid fa-search"></i> Periksa
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="certResultContainer" class="mt-6">
+                        <!-- Will display list or certificate cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. Presensi QR Code (Scanner Camera & Virtual Form) -->
+            <div id="content-presensi" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-qrcode text-rose-600"></i> Presensi Kehadiran Online
+                            </h3>
+                            <p class="text-xs text-slate-500">Pindai QR Code kegiatan yang disediakan panitia atau isi konfirmasi kehadiran</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                        <!-- Kamera / QR Scanner -->
+                        <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center">
+                            <h4 class="text-sm font-bold text-slate-800 mb-2 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-camera text-rose-500"></i> Pindai Langsung QR Code
+                            </h4>
+                            <p class="text-xs text-slate-500 mb-4">Arahkan kamera HP / Web camera ke QR Code acara</p>
+                            
+                            <div id="qrReader" class="w-full max-w-xs mx-auto overflow-hidden rounded-xl bg-black border-2 border-dashed border-slate-300 min-h-[220px] flex items-center justify-center text-slate-400 text-xs">
+                                <span>Kamera belum aktif. Klik tombol di bawah</span>
+                            </div>
+
+                            <div class="mt-4 flex justify-center gap-2">
+                                <button onclick="startQrScanner()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow transition">
+                                    <i class="fa-solid fa-play mr-1"></i> Mulai Kamera
+                                </button>
+                                <button onclick="stopQrScanner()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition">
+                                    <i class="fa-solid fa-stop mr-1"></i> Hentikan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Manual Input Presensi Kegiatan Aktif -->
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-id-card-clip text-brand-600"></i> Form Presensi Kehadiran Peserta
+                            </h4>
+                            <form id="publicPresensiForm" onsubmit="submitPresensi(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Pilih Kegiatan Berlangsung *</label>
+                                    <select id="presensiSelectKegiatan" required class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                        <!-- Populated from Agenda -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">NIP / NUPTK *</label>
+                                    <input type="text" id="presensiNIP" required placeholder="Contoh: 198501102009021003" onchange="autoFillPresensiName()" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Nama Lengkap Guru *</label>
+                                    <input type="text" id="presensiNama" required placeholder="Nama lengkap dengan gelar" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-700 mb-1">Asal Sekolah *</label>
+                                    <input type="text" id="presensiSekolah" required placeholder="Contoh: SMPN 1 Sidoarjo" class="w-full text-xs px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition">
+                                    <i class="fa-solid fa-check-circle mr-1"></i> Simpan Kehadiran (Hadir)
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. Rekap Absen (Preview, Download PDF) -->
+            <div id="content-rekap" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-clipboard-user text-sky-600"></i> Rekapitulasi Presensi Kehadiran
+                            </h3>
+                            <p class="text-xs text-slate-500">Laporan data kehadiran seluruh peserta per kegiatan</p>
+                        </div>
+                        <button onclick="downloadRekapPdf()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-pdf"></i> Unduh Rekap PDF
+                        </button>
+                    </div>
+
+                    <div class="mt-4 flex flex-col sm:flex-row gap-3">
+                        <select id="filterRekapKegiatan" onchange="filterRekapTable()" class="text-xs px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            <option value="all">Semua Kegiatan</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="overflow-x-auto mt-4">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3 px-4">No</th>
+                                    <th class="py-3 px-4">Kegiatan</th>
+                                    <th class="py-3 px-4">Waktu Presensi</th>
+                                    <th class="py-3 px-4">NIP/NUPTK</th>
+                                    <th class="py-3 px-4">Nama Lengkap</th>
+                                    <th class="py-3 px-4">Asal Sekolah</th>
+                                    <th class="py-3 px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rekapAbsenTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 10. Notulen (Preview, Download PDF) -->
+            <div id="content-notulen" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-orange-600"></i> Notulen Rapat & Pertemuan
+                            </h3>
+                            <p class="text-xs text-slate-500">Catatan resmi keputusan, hasil diskusi materi, dan kesepakatan MGMP</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 space-y-4" id="publicNotulenList">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 11. Undangan (Preview, Download PDF + Notif Badge) -->
+            <div id="content-undangan" class="tab-content hidden">
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-100 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-envelope-open-text text-red-600"></i> Surat Undangan Resmi
+                                </h3>
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700 border border-red-200 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle text-[6px] text-red-500"></i> Ada Undangan Baru
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500">Surat dinas dan undangan pertemuan resmi MGMP Informatika SMP Kabupaten Sidoarjo</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4" id="publicUndanganList">
+                        <!-- Dynamic items -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== DASHBOARD ADMIN ==================== -->
+    <section id="adminView" class="hidden pb-20">
+        <!-- Admin Subheader -->
+        <div class="bg-slate-900 text-white py-6 border-b border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white shadow-lg shadow-brand-600/30">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold leading-tight">Panel Kontrol Administrator MGMP</h2>
+                        <p class="text-xs text-slate-400">Pengelolaan terpusat data, pengurus, agenda, dokumen & sertifikat</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="switchView('public')" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 flex items-center gap-2 transition">
+                        <i class="fa-solid fa-eye text-cyan-400"></i> Lihat Portal Publik
+                    </button>
+                    <button onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow transition">
+                        <i class="fa-solid fa-power-off"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Sidebar Menu Admin -->
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 sticky top-24">
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">11 Menu Administrator</p>
+                        <nav class="space-y-1 text-xs font-medium">
+                            <button onclick="switchAdminSub('settings')" id="adminTab-settings" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-sliders text-brand-600 w-4"></i> 1. Pengaturan MGMP
+                            </button>
+                            <button onclick="switchAdminSub('pengurus')" id="adminTab-pengurus" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-sitemap text-blue-600 w-4"></i> 2. Susunan Pengurus
+                            </button>
+                            <button onclick="switchAdminSub('pembina')" id="adminTab-pembina" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-user-shield text-indigo-600 w-4"></i> 3. Daftar Pembina
+                            </button>
+                            <button onclick="switchAdminSub('anggota')" id="adminTab-anggota" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-users text-emerald-600 w-4"></i> 4. Daftar Anggota
+                            </button>
+                            <button onclick="switchAdminSub('proker')" id="adminTab-proker" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-calendar-check text-cyan-600 w-4"></i> 5. Program Kerja
+                            </button>
+                            <button onclick="switchAdminSub('agenda')" id="adminTab-agenda" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-calendar-days text-amber-600 w-4"></i> 6. Agenda Kegiatan
+                            </button>
+                            <button onclick="switchAdminSub('laporan')" id="adminTab-laporan" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-file-lines text-teal-600 w-4"></i> 7. Laporan Kegiatan
+                            </button>
+                            <button onclick="switchAdminSub('sertifikat')" id="adminTab-sertifikat" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-certificate text-purple-600 w-4"></i> 8. Sertifikat
+                            </button>
+                            <button onclick="switchAdminSub('presensi')" id="adminTab-presensi" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-qrcode text-rose-600 w-4"></i> 9. Presensi Acara
+                            </button>
+                            <button onclick="switchAdminSub('notulen')" id="adminTab-notulen" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-book-open text-orange-600 w-4"></i> 10. Notulen
+                            </button>
+                            <button onclick="switchAdminSub('undangan')" id="adminTab-undangan" class="admin-tab-btn w-full text-left px-3 py-2.5 rounded-xl text-slate-700 hover:bg-slate-100 flex items-center gap-2.5 transition">
+                                <i class="fa-solid fa-envelope-open-text text-red-600 w-4"></i> 11. Undangan
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Admin Main Content Panels -->
+                <div class="lg:col-span-9">
+
+                    <!-- 1. ADMIN: PENGATURAN -->
+                    <div id="admin-settings" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <h3 class="text-base font-bold text-slate-900 border-b pb-4 mb-5 flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-brand-600"></i> 1. Pengaturan Identitas & Logo MGMP
+                            </h3>
+                            <form id="formSettings" onsubmit="saveSettings(event)" class="space-y-5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Organisasi MGMP</label>
+                                    <input type="text" id="settingNamaMgmp" required class="w-full text-xs sm:text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Sekretariat</label>
+                                    <textarea id="settingAlamatSekretariat" rows="3" required class="w-full text-xs sm:text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Upload File Logo Baru (PNG/JPG/SVG)</label>
+                                    <input type="file" id="settingLogoFile" accept="image/*" onchange="previewLogoFile(event)" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 border border-slate-200 rounded-xl p-1">
+                                    <p class="text-[11px] text-slate-400 mt-1">Gunakan logo bundar dengan elemen khas Kabupaten Sidoarjo & Informatika.</p>
+                                </div>
+                                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center gap-4">
+                                    <span class="text-xs font-semibold text-slate-600">Pratinjau Logo Aktif:</span>
+                                    <div id="previewLogoBox" class="w-14 h-14 bg-white border border-slate-200 rounded-xl p-1 flex items-center justify-center overflow-hidden">
+                                        <!-- Logo image or svg preview -->
+                                    </div>
+                                </div>
+                                <button type="submit" class="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md shadow-brand-700/20 transition">
+                                    Simpan Pengaturan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 2. ADMIN: SUSUNAN PENGURUS -->
+                    <div id="admin-pengurus" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-sitemap text-blue-600"></i> 2. Susunan Pengurus
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Ketua, Wakil Ketua, Bendahara, Sekretaris, Anggota</p>
+                                </div>
+                                <button onclick="openPengurusModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Tambah Pengurus
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b">
+                                        <tr>
+                                            <th class="py-3 px-3">Jabatan</th>
+                                            <th class="py-3 px-3">NIP / NUPTK</th>
+                                            <th class="py-3 px-3">Nama</th>
+                                            <th class="py-3 px-3">L/P</th>
+                                            <th class="py-3 px-3">Asal Sekolah</th>
+                                            <th class="py-3 px-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminPengurusTableBody" class="divide-y divide-slate-100">
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. ADMIN: DAFTAR PEMBINA -->
+                    <div id="admin-pembina" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-user-shield text-indigo-600"></i> 3. Daftar Pembina
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Jabatan: Koordinator, Anggota</p>
+                                </div>
+                                <button onclick="openPembinaModal()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Tambah Pembina
+                                </button>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b">
+                                        <tr>
+                                            <th class="py-3 px-3">Jabatan</th>
+                                            <th class="py-3 px-3">NIP / NUPTK</th>
+                                            <th class="py-3 px-3">Nama</th>
+                                            <th class="py-3 px-3">L/P</th>
+                                            <th class="py-3 px-3">Asal Instansi/Sekolah</th>
+                                            <th class="py-3 px-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminPembinaTableBody" class="divide-y divide-slate-100">
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ADMIN: DAFTAR ANGGOTA + EXCEL IMPORT/EXPORT -->
+                    <div id="admin-anggota" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-3 mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-users text-emerald-600"></i> 4. Manajemen Data Anggota
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Input guru, atur status (Aktif/Tidak Aktif), impor & ekspor template</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button onclick="downloadExcelTemplate()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-slate-200">
+                                        <i class="fa-solid fa-file-excel text-emerald-600"></i> Export Template
+                                    </button>
+                                    <label class="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-emerald-200 cursor-pointer">
+                                        <i class="fa-solid fa-file-import"></i> Impor Excel
+                                        <input type="file" accept=".csv, .xlsx, .xls" onchange="importExcelSimulate(event)" class="hidden">
+                                    </label>
+                                    <button onclick="openAnggotaModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                        <i class="fa-solid fa-plus"></i> Tambah Anggota
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b">
+                                        <tr>
+                                            <th class="py-3 px-3">NIP/NUPTK</th>
+                                            <th class="py-3 px-3">Nama</th>
+                                            <th class="py-3 px-3">L/P</th>
+                                            <th class="py-3 px-3">Asal Sekolah</th>
+                                            <th class="py-3 px-3">Status</th>
+                                            <th class="py-3 px-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminAnggotaTableBody" class="divide-y divide-slate-100">
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. ADMIN: PROGRAM KERJA -->
+                    <div id="admin-proker" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-calendar-check text-cyan-600"></i> 5. Program Kerja (Upload File DOC/PDF)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Unggah berkas resmi program kerja tahunan</p>
+                                </div>
+                                <button onclick="openProkerModal()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-upload"></i> Upload Proker
+                                </button>
+                            </div>
+                            <div class="space-y-3" id="adminProkerList">
+                                <!-- Dynamic List -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. ADMIN: AGENDA KEGIATAN -->
+                    <div id="admin-agenda" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-calendar-days text-amber-600"></i> 6. Agenda Kegiatan
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Nama kegiatan, Hari/Tanggal/Jam, Tempat, Materi, Narasumber</p>
+                                </div>
+                                <button onclick="openAgendaModal()" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-900 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Tambah Agenda
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b">
+                                        <tr>
+                                            <th class="py-3 px-3">Kegiatan</th>
+                                            <th class="py-3 px-3">Waktu</th>
+                                            <th class="py-3 px-3">Tempat</th>
+                                            <th class="py-3 px-3">Materi</th>
+                                            <th class="py-3 px-3">Narasumber</th>
+                                            <th class="py-3 px-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminAgendaTableBody" class="divide-y divide-slate-100">
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. ADMIN: LAPORAN KEGIATAN -->
+                    <div id="admin-laporan" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-file-lines text-teal-600"></i> 7. Laporan Kegiatan (Tambah, Edit, Hapus)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Unggah file DOC/PDF laporan kegiatan</p>
+                                </div>
+                                <button onclick="openLaporanModal()" class="px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Tambah Laporan
+                                </button>
+                            </div>
+                            <div class="space-y-3" id="adminLaporanList">
+                                <!-- Dynamic List -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8. ADMIN: SERTIFIKAT (Terkoneksi Daftar Peserta) -->
+                    <div id="admin-sertifikat" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b gap-3 mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-certificate text-purple-600"></i> 8. Penerbitan Sertifikat (Terkoneksi Peserta)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Upload PDF sertifikat otomatis terhubung NIP dan daftar guru</p>
+                                </div>
+                                <button onclick="openSertifikatModal()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Terbitkan Sertifikat
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-600">
+                                    <thead class="bg-slate-50 text-slate-700 font-semibold uppercase tracking-wider border-b">
+                                        <tr>
+                                            <th class="py-3 px-3">Nomor Sertifikat</th>
+                                            <th class="py-3 px-3">Kegiatan</th>
+                                            <th class="py-3 px-3">Peserta Terdaftar</th>
+                                            <th class="py-3 px-3">File PDF</th>
+                                            <th class="py-3 px-3 text-right">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminSertifikatTableBody" class="divide-y divide-slate-100">
+                                        <!-- Dynamic rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 9. ADMIN: PRESENSI -->
+                    <div id="admin-presensi" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-qrcode text-rose-600"></i> 9. Sesi Presensi & Generator QR Code
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Buat sesi presensi kegiatan dan tampilkan QR Code untuk peserta</p>
+                                </div>
+                                <button onclick="openPresensiModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-plus"></i> Buat Sesi Presensi
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="adminPresensiGrid">
+                                <!-- Dynamic presensi cards -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10. ADMIN: NOTULEN -->
+                    <div id="admin-notulen" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-book-open text-orange-600"></i> 10. Notulen Kegiatan (Isian Manual)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Input agenda, tempat, materi, narasumber dan rangkuman notulensi lengkap</p>
+                                </div>
+                                <button onclick="openNotulenModal()" class="px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-pen-to-square"></i> Buat Notulen Baru
+                                </button>
+                            </div>
+                            <div class="space-y-4" id="adminNotulenList">
+                                <!-- Dynamic Notulen cards -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 11. ADMIN: UNDANGAN -->
+                    <div id="admin-undangan" class="admin-subpanel hidden">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                            <div class="flex justify-between items-center pb-4 border-b mb-6">
+                                <div>
+                                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                                        <i class="fa-solid fa-envelope-open-text text-red-600"></i> 11. Surat Undangan Resmi (Upload DOC/PDF)
+                                    </h3>
+                                    <p class="text-xs text-slate-500">Kelola dan upload surat undangan MGMP dengan trigger notifikasi baru</p>
+                                </div>
+                                <button onclick="openUndanganModal()" class="px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Undangan
+                                </button>
+                            </div>
+                            <div class="space-y-3" id="adminUndanganList">
+                                <!-- Dynamic items -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- MODAL: LOGIN ADMIN -->
+<div id="loginModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 relative">
+        <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="text-center mb-6">
+            <div class="w-14 h-14 bg-brand-50 text-brand-700 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+                <i class="fa-solid fa-shield-halved text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900">Login Administrator</h3>
+            <p class="text-xs text-slate-500">MGMP Informatika SMP Kabupaten Sidoarjo</p>
+        </div>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Username</label>
+                <input type="text" id="loginUsername" required placeholder="Masukkan username admin" class="w-full text-xs sm:text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full text-xs sm:text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none">
+            </div>
+
+            <button type="submit" class="w-full py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-semibold rounded-xl text-sm shadow-md shadow-brand-700/20 transition">
+                Masuk Dashboard
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL UMUM: MODAL FORM CRUD GENERIK -->
+<div id="crudModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl border border-slate-100 relative custom-scrollbar">
+        <button onclick="closeCrudModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h3 id="crudModalTitle" class="text-base font-bold text-slate-900 mb-4 pb-2 border-b">Form Tambah Data</h3>
+        <div id="crudModalBody">
+            <!-- Form content dynamically injected -->
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: PREVIEW DOKUMEN / PDF / SERTIFIKAT -->
+<div id="previewDocModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col p-6 shadow-2xl border border-slate-200">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-4">
+            <div>
+                <h3 id="previewDocTitle" class="text-base font-bold text-slate-900">Pratinjau Dokumen</h3>
+                <p id="previewDocMeta" class="text-xs text-slate-500">MGMP Dokumen Resmi</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="previewDownloadBtn" class="px-3 py-1.5 bg-brand-700 hover:bg-brand-800 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-download"></i> Unduh PDF
+                </button>
+                <button onclick="closePreviewDocModal()" class="text-slate-400 hover:text-slate-600 p-1 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+        <div id="previewDocContent" class="flex-grow overflow-y-auto bg-slate-50 rounded-xl p-6 border border-slate-200 text-xs text-slate-700">
+            <!-- Rendered preview content -->
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: PREVIEW QR CODE KEGIATAN -->
+<div id="qrCodeModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl relative">
+        <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h4 id="qrModalTitle" class="text-sm font-bold text-slate-900 mb-1">QR Code Presensi</h4>
+        <p id="qrModalSub" class="text-xs text-slate-500 mb-4">Pindai QR ini untuk konfirmasi kehadiran</p>
+        
+        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block mb-4">
+            <img id="qrCodeImage" src="" alt="QR Code" class="w-48 h-48 mx-auto rounded-lg shadow-sm">
+        </div>
+
+        <p class="text-[11px] text-slate-500 mb-4">Tampilkan layar ini kepada peserta di lokasi kegiatan.</p>
+        <button onclick="window.print()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold">
+            <i class="fa-solid fa-print mr-1"></i> Cetak Lembar QR
+        </button>
+    </div>
+</div>
+
+<!-- Toast Notifikasi Custom (Tanpa alert()) -->
+<div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 text-white shadow-xl border border-slate-800 text-xs sm:text-sm">
+        <div id="toastIcon" class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></div>
+        <span id="toastMsg">Notifikasi aksi berhasil!</span>
+    </div>
+</div>
+
+<script>
+    /* ==========================================================================
+       STORAGE DATA AWAL & REPOSITORI MGMP INFORMATIKA SMP KABUPATEN SIDOARJO
+       ========================================================================== */
+    const STORAGE_KEY = 'MGMP_SIDOARJO_DATA_2026';
+
+    const defaultDatabase = {
+        pengaturan: {
+            namaMgmp: 'MGMP Informatika SMP Kabupaten Sidoarjo',
+            alamatSekretariat: 'SMP Negeri 1 Sidoarjo, Jl. Ponti No. 09, Magersari, Sidoarjo, Jawa Timur 61211',
+            logoUrl: '' // SVG Default used if blank
+        },
+        pengurus: [
+            { id: 'p1', nip: '197503122000031004', nama: 'Drs. Bambang Sudarsono, M.Pd.', gender: 'L', sekolah: 'SMPN 1 Sidoarjo', jabatan: 'Ketua' },
+            { id: 'p2', nip: '198207192008012015', nama: 'Nurul Hidayati, S.Kom., M.Kom.', gender: 'P', sekolah: 'SMPN 2 Candi', jabatan: 'Wakil Ketua' },
+            { id: 'p3', nip: '198511252010011012', nama: 'Rudi Hartono, S.Pd., Gr.', gender: 'L', sekolah: 'SMPN 3 Krian', jabatan: 'Sekretaris' },
+            { id: 'p4', nip: '198804142011012011', nama: 'Siti Aminah, S.Kom.', gender: 'P', sekolah: 'SMPN 1 Sedati', jabatan: 'Bendahara' },
+            { id: 'p5', nip: '199201052019031008', nama: 'Ahmad Fauzi, S.Kom.', gender: 'L', sekolah: 'SMPN 2 Taman', jabatan: 'Anggota' },
+            { id: 'p6', nip: '199009182015032004', nama: 'Dewi Lestari, S.Pd.', gender: 'P', sekolah: 'SMPN 1 Waru', jabatan: 'Anggota' }
+        ],
+        pembina: [
+            { id: 'pb1', nip: '196708151994121002', nama: 'Dr. H. Agus Wahyudi, M.Pd.', gender: 'L', sekolah: 'Dinas Pendidikan & Kebudayaan Kab. Sidoarjo', jabatan: 'Koordinator' },
+            { id: 'pb2', nip: '197011021998022003', nama: 'Hj. Sri Rahayu, M.Si.', gender: 'P', sekolah: 'Pengawas Pembina SMP Kab. Sidoarjo', jabatan: 'Anggota' }
+        ],
+        anggota: [
+            { id: 'a1', nip: '198005122005011007', nama: 'Fajar Nugroho, S.Kom.', gender: 'L', sekolah: 'SMPN 1 Sidoarjo', status: 'Aktif' },
+            { id: 'a2', nip: '198302192006042012', nama: 'Endang Sulistiyani, S.Pd.', gender: 'P', sekolah: 'SMPN 2 Sidoarjo', status: 'Aktif' },
+            { id: 'a3', nip: '198711092010011014', nama: 'Eko Prasetyo, S.Kom.', gender: 'L', sekolah: 'SMPN 1 Buduran', status: 'Aktif' },
+            { id: 'a4', nip: '199103282015022006', nama: 'Tri Wahyuni, S.Kom.', gender: 'P', sekolah: 'SMPN 1 Porong', status: 'Aktif' },
+            { id: 'a5', nip: '198409152009031005', nama: 'Didik Kurniawan, S.Pd.', gender: 'L', sekolah: 'SMP Islam Sidoarjo', status: 'Aktif' },
+            { id: 'a6', nip: '197906102008011019', nama: 'Budi Santoso, S.Kom.', gender: 'L', sekolah: 'SMP Muhammadiyah 1 Sidoarjo', status: 'Tidak Aktif' }
+        ],
+        proker: [
+            { id: 'pr1', judul: 'Program Kerja PKB & Kurikulum Merdeka Fase D Informatika 2026', tanggal: '2026-01-15', format: 'PDF', ukuran: '2.4 MB', keterangan: 'Rencana kerja tahunan MGMP Informatika memuat pelatihan AI & Computational Thinking.' },
+            { id: 'pr2', judul: 'Panduan Asesmen & Praktikum Pemrograman Block / Python SMP', tanggal: '2026-02-10', format: 'DOCX', ukuran: '1.8 MB', keterangan: 'Dokumen kerja penyusunan modul ajar komputasi terpadu se-Kabupaten.' }
+        ],
+        agenda: [
+            { 
+                id: 'ag1', 
+                nama: 'Workshop Penerapan Computational Thinking & Integrasi AI dalam Pembelajaran Informatika SMP',
+                waktu: 'Kamis, 29 Oktober 2026, 08:30 - 14:00 WIB',
+                tempat: 'Aula SMP Negeri 1 Sidoarjo (Ruang Multimedia Lt. 2)',
+                materi: 'Implementasi Kurikulum Nasional Fase D Informatika dan Proyek Literasi Data',
+                narasumber: 'Prof. Dr. Aries Saifuddin, M.T. (Pakar AI & Pembelajaran Digital)'
+            },
+            { 
+                id: 'ag2', 
+                nama: 'Rapat Koordinasi Persiapan Olimpiade Sains Informatika & Robotika SMP Sidoarjo 2026',
+                waktu: 'Rabu, 11 November 2026, 09:00 - 12:30 WIB',
+                tempat: 'Laboratorium Komputer SMPN 2 Candi',
+                materi: 'Penyusunan kisi-kisi dan teknis lomba Coding & Algoritma SMP tingkat Kabupaten',
+                narasumber: 'Tim Pengembang Kurikulum Informatika Kab. Sidoarjo'
+            }
+        ],
+        laporan: [
+            { id: 'lp1', judul: 'Laporan Workshop Micro:bit & IoT untuk Guru Informatika SMP', tanggal: '2026-09-18', format: 'PDF', fileUrl: '#', ringkasan: 'Telah selesai diselenggarakan dengan 85 peserta guru dari SMP Negeri dan Swasta Sidoarjo.' },
+            { id: 'lp2', judul: 'Laporan Kegiatan Bedah Modul Ajar Berpikir Komputasional Semester Ganjil', tanggal: '2026-08-25', format: 'PDF', fileUrl: '#', ringkasan: 'Penyamaan persepsi rubrik asesmen portofolio coding siswa SMP.' }
+        ],
+        sertifikat: [
+            { 
+                id: 'cert1', 
+                noSertifikat: '421.3/089/MGMP-INF/SDA/2026',
+                kegiatan: 'Workshop Penerapan Computational Thinking & Integrasi AI',
+                nip: '198005122005011007',
+                nama: 'Fajar Nugroho, S.Kom.',
+                sekolah: 'SMPN 1 Sidoarjo',
+                jamPelajaran: '32 JP',
+                tanggalTerbit: '29 Oktober 2026'
+            },
+            { 
+                id: 'cert2', 
+                noSertifikat: '421.3/090/MGMP-INF/SDA/2026',
+                kegiatan: 'Workshop Penerapan Computational Thinking & Integrasi AI',
+                nip: '198302192006042012',
+                nama: 'Endang Sulistiyani, S.Pd.',
+                sekolah: 'SMPN 2 Sidoarjo',
+                jamPelajaran: '32 JP',
+                tanggalTerbit: '29 Oktober 2026'
+            }
+        ],
+        presensiLog: [
+            { id: 'prl1', kegiatanId: 'ag1', kegiatanNama: 'Workshop Penerapan Computational Thinking & Integrasi AI', nip: '198005122005011007', nama: 'Fajar Nugroho, S.Kom.', sekolah: 'SMPN 1 Sidoarjo', timestamp: '2026-10-29 08:42 WIB', status: 'Hadir Tepat Waktu' },
+            { id: 'prl2', kegiatanId: 'ag1', kegiatanNama: 'Workshop Penerapan Computational Thinking & Integrasi AI', nip: '198302192006042012', nama: 'Endang Sulistiyani, S.Pd.', sekolah: 'SMPN 2 Sidoarjo', timestamp: '2026-10-29 08:49 WIB', status: 'Hadir Tepat Waktu' }
+        ],
+        notulen: [
+            {
+                id: 'not1',
+                nama: 'Rapat Kerja Awal Semester Genap & Pemanfaatan Platform Digital MGMP',
+                waktu: 'Senin, 05 Januari 2026, 09.00 - 12.00 WIB',
+                tempat: 'SMPN 1 Sidoarjo',
+                materi: 'Standarisasi Materi Algoritma & Pemrograman Visual Kelas 7-9 SMP',
+                narasumber: 'Drs. Bambang Sudarsono, M.Pd.',
+                isi: 'Hasil Keputusan:\n1. Seluruh SMP di Sidoarjo disepakati mengadopsi Scratch dan Python dasar sebagai pengantar materi algoritma.\n2. Jadwal pertemuan MGMP dilaksanakan rutin setiap bulan minggu ke-3.\n3. Presensi setiap agenda wajib menggunakan QR Code resmi pada website MGMP.'
+            }
+        ],
+        undangan: [
+            {
+                id: 'und1',
+                nomorSurat: '005/112/MGMP-INF/X/2026',
+                judul: 'Undangan Workshop Penerapan Computational Thinking & Integrasi AI',
+                tanggalKegiatan: 'Kamis, 29 Oktober 2026',
+                tempat: 'Aula SMPN 1 Sidoarjo',
+                isBaru: true,
+                format: 'PDF',
+                fileUrl: '#'
+            },
+            {
+                id: 'und2',
+                nomorSurat: '005/098/MGMP-INF/IX/2026',
+                judul: 'Undangan Koordinasi Pengurus Inti & Finalisasi LKS Informatika',
+                tanggalKegiatan: 'Rabu, 16 September 2026',
+                tempat: 'SMPN 2 Candi',
+                isBaru: false,
+                format: 'PDF',
+                fileUrl: '#'
+            }
+        ]
+    };
+
+    let appData = {};
+
+    function loadDatabase() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                appData = JSON.parse(stored);
+            } catch(e) {
+                appData = JSON.parse(JSON.stringify(defaultDatabase));
+            }
+        } else {
+            appData = JSON.parse(JSON.stringify(defaultDatabase));
+            saveDatabase();
+        }
+    }
+
+    function saveDatabase() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+    }
+
+    /* ==========================================================================
+       AUTHENTICATION & SESSION
+       ========================================================================== */
+    let isAdminLoggedIn = false;
+
+    function openLoginModal() {
+        document.getElementById('loginModal').classList.remove('hidden');
+    }
+
+    function closeLoginModal() {
+        document.getElementById('loginModal').classList.add('hidden');
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const u = document.getElementById('loginUsername').value.trim();
+        const p = document.getElementById('loginPassword').value.trim();
+
+        if (u === 'adminmgmp2026' && p === 'mgmp2026@') {
+            isAdminLoggedIn = true;
+            closeLoginModal();
+            updateAuthUI();
+            switchView('admin');
+            showToast('Login berhasil! Selamat datang Admin MGMP Informatika Sidoarjo', 'success');
+        } else {
+            showToast('Username atau Password salah! Periksa kembali.', 'error');
+        }
+    }
+
+    function logoutAdmin() {
+        isAdminLoggedIn = false;
+        updateAuthUI();
+        switchView('public');
+        showToast('Anda telah keluar dari Dashboard Administrator.', 'info');
+    }
+
+    function updateAuthUI() {
+        const authBtn = document.getElementById('authBtnContainer');
+        const adminBadge = document.getElementById('adminUserBadge');
+        if (isAdminLoggedIn) {
+            authBtn.classList.add('hidden');
+            adminBadge.classList.remove('hidden');
+            adminBadge.classList.add('flex');
+        } else {
+            authBtn.classList.remove('hidden');
+            adminBadge.classList.add('hidden');
+            adminBadge.classList.remove('flex');
+        }
+    }
+
+    /* ==========================================================================
+       VIEW & TAB ROUTING
+       ========================================================================== */
+    function switchView(view) {
+        const pub = document.getElementById('publicView');
+        const adm = document.getElementById('adminView');
+
+        if (view === 'admin') {
+            if (!isAdminLoggedIn) {
+                openLoginModal();
+                return;
+            }
+            pub.classList.add('hidden');
+            adm.classList.remove('hidden');
+            switchAdminSub('settings');
+        } else {
+            pub.classList.remove('hidden');
+            adm.classList.add('hidden');
+            stopQrScanner();
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchTab(tabId) {
+        const tabs = ['pengurus', 'pembina', 'anggota', 'proker', 'agenda', 'laporan', 'sertifikat', 'presensi', 'rekap', 'notulen', 'undangan'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            const content = document.getElementById(`content-${t}`);
+            if (btn && content) {
+                if (t === tabId) {
+                    btn.classList.add('bg-brand-50', 'text-brand-700', 'font-bold', 'border-b-2', 'border-brand-700');
+                    btn.classList.remove('text-slate-600');
+                    content.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('bg-brand-50', 'text-brand-700', 'font-bold', 'border-b-2', 'border-brand-700');
+                    btn.classList.add('text-slate-600');
+                    content.classList.add('hidden');
+                }
+            }
+        });
+
+        // specific tab actions
+        if (tabId === 'presensi') populatePresensiDropdown();
+        if (tabId === 'rekap') populateRekapFilter();
+    }
+
+    function switchAdminSub(subId) {
+        const subs = ['settings', 'pengurus', 'pembina', 'anggota', 'proker', 'agenda', 'laporan', 'sertifikat', 'presensi', 'notulen', 'undangan'];
+        subs.forEach(s => {
+            const btn = document.getElementById(`adminTab-${s}`);
+            const panel = document.getElementById(`admin-${s}`);
+            if (btn && panel) {
+                if (s === subId) {
+                    btn.classList.add('bg-brand-50', 'text-brand-700', 'font-bold', 'shadow-sm');
+                    btn.classList.remove('text-slate-700');
+                    panel.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('bg-brand-50', 'text-brand-700', 'font-bold', 'shadow-sm');
+                    btn.classList.add('text-slate-700');
+                    panel.classList.add('hidden');
+                }
+            }
+        });
+
+        // Trigger dynamic rendering in admin
+        renderAdminTables();
+    }
+
+    /* ==========================================================================
+       RENDERERS FOR PUBLIC DASHBOARD
+       ========================================================================== */
+    function renderPublicApp() {
+        renderHeaderAndSettings();
+        renderPublicPengurus();
+        renderPublicPembina();
+        renderPublicAnggota();
+        renderPublicProker();
+        renderPublicAgenda();
+        renderPublicLaporan();
+        renderPublicRekap();
+        renderPublicNotulen();
+        renderPublicUndangan();
+        populatePresensiDropdown();
+    }
+
+    function renderHeaderAndSettings() {
+        const s = appData.pengaturan;
+        document.getElementById('brandTitle').textContent = s.namaMgmp.toUpperCase();
+        document.getElementById('heroSekretariat').textContent = `Sekretariat: ${s.alamatSekretariat}`;
+        
+        // Logo update if custom logo exists
+        const logoBoxes = [document.getElementById('headerLogoContainer'), document.getElementById('previewLogoBox')];
+        if (s.logoUrl) {
+            logoBoxes.forEach(el => {
+                if (el) el.innerHTML = `<img src="${s.logoUrl}" class="w-full h-full object-contain rounded-xl" alt="Logo MGMP">`;
+            });
+        }
+    }
+
+    function renderPublicPengurus() {
+        const grid = document.getElementById('publicPengurusGrid');
+        grid.innerHTML = '';
+        appData.pengurus.forEach(p => {
+            const badgeColor = p.jabatan === 'Ketua' ? 'bg-amber-100 text-amber-800 border-amber-300' :
+                               p.jabatan === 'Wakil Ketua' ? 'bg-blue-100 text-blue-800 border-blue-300' :
+                               p.jabatan === 'Sekretaris' ? 'bg-indigo-100 text-indigo-800 border-indigo-300' :
+                               p.jabatan === 'Bendahara' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-700 border-slate-300';
+            
+            const card = document.createElement('div');
+            card.className = "p-5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition relative flex items-start gap-3.5";
+            card.innerHTML = `
+                <div class="w-12 h-12 rounded-xl ${p.gender === 'L' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'} flex items-center justify-center font-bold text-base flex-shrink-0">
+                    <i class="fa-solid ${p.gender === 'L' ? 'fa-user-tie' : 'fa-user'}"></i>
+                </div>
+                <div class="flex-grow">
+                    <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider mb-1.5 ${badgeColor}">${p.jabatan}</span>
+                    <h4 class="font-bold text-slate-900 text-sm leading-snug">${p.nama}</h4>
+                    <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-id-badge mr-1 text-slate-400"></i> NIP: ${p.nip}</p>
+                    <p class="text-xs text-brand-700 font-medium mt-0.5"><i class="fa-solid fa-school mr-1 text-slate-400"></i> ${p.sekolah}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function renderPublicPembina() {
+        const grid = document.getElementById('publicPembinaGrid');
+        grid.innerHTML = '';
+        appData.pembina.forEach(p => {
+            const card = document.createElement('div');
+            card.className = "p-5 rounded-2xl border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/40 shadow-sm flex items-start gap-4";
+            card.innerHTML = `
+                <div class="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-600/20">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200 uppercase tracking-wide mb-1">${p.jabatan}</span>
+                    <h4 class="font-bold text-slate-900 text-sm leading-snug">${p.nama}</h4>
+                    <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-id-card text-slate-400 mr-1"></i> NIP: ${p.nip}</p>
+                    <p class="text-xs text-indigo-700 font-medium mt-0.5"><i class="fa-solid fa-building-columns text-slate-400 mr-1"></i> ${p.sekolah}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function renderPublicAnggota() {
+        const query = (document.getElementById('searchAnggotaPublic')?.value || '').toLowerCase();
+        const tbody = document.getElementById('publicAnggotaTableBody');
+        tbody.innerHTML = '';
+
+        const filtered = appData.anggota.filter(a => 
+            a.nama.toLowerCase().includes(query) || 
+            a.sekolah.toLowerCase().includes(query) || 
+            a.nip.includes(query)
+        );
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Tidak ada anggota yang sesuai pencarian.</td></tr>`;
+            return;
+        }
+
+        filtered.forEach((a, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-50/80 transition";
+            tr.innerHTML = `
+                <td class="py-3 px-4 font-mono text-[11px] text-slate-400">${idx + 1}</td>
+                <td class="py-3 px-4 font-mono font-medium text-slate-700">${a.nip}</td>
+                <td class="py-3 px-4 font-semibold text-slate-900">${a.nama}</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] ${a.gender === 'L' ? 'bg-blue-50 text-blue-700 font-bold' : 'bg-pink-50 text-pink-700 font-bold'}">${a.gender}</span></td>
+                <td class="py-3 px-4">${a.sekolah}</td>
+                <td class="py-3 px-4">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${a.status === 'Aktif' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}">
+                        <span class="w-1.5 h-1.5 rounded-full ${a.status === 'Aktif' ? 'bg-emerald-500' : 'bg-slate-400'}"></span>
+                        ${a.status}
+                    </span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderPublicProker() {
+        const list = document.getElementById('publicProkerList');
+        list.innerHTML = '';
+        appData.proker.forEach(p => {
+            const item = document.createElement('div');
+            item.className = "p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white hover:border-cyan-200 hover:shadow-sm transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+            item.innerHTML = `
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl flex-shrink-0">
+                        <i class="fa-solid ${p.format === 'PDF' ? 'fa-file-pdf text-red-500' : 'fa-file-word text-blue-600'}"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${p.judul}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">${p.keterangan}</p>
+                        <div class="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
+                            <span><i class="fa-regular fa-calendar mr-1"></i> ${p.tanggal}</span>
+                            <span>•</span>
+                            <span>Format: ${p.format}</span>
+                            <span>•</span>
+                            <span>${p.ukuran}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="previewDocument('Program Kerja', '${p.judul}', '${p.keterangan}', '${p.tanggal}')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                        <i class="fa-solid fa-eye mr-1"></i> Preview
+                    </button>
+                    <button onclick="downloadDummyPdf('${p.judul}.pdf')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold shadow transition">
+                        <i class="fa-solid fa-download mr-1"></i> Download
+                    </button>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function renderPublicAgenda() {
+        const grid = document.getElementById('publicAgendaGrid');
+        grid.innerHTML = '';
+        appData.agenda.forEach(ag => {
+            const card = document.createElement('div');
+            card.className = "p-5 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-white to-amber-50/30 shadow-sm flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 mb-2">
+                        <i class="fa-solid fa-calendar-check text-amber-600"></i> Agenda Resmi
+                    </span>
+                    <h4 class="font-bold text-slate-900 text-sm mb-3 leading-snug">${ag.nama}</h4>
+                    <div class="space-y-1.5 text-xs text-slate-600">
+                        <div class="flex items-start gap-2">
+                            <i class="fa-regular fa-clock text-amber-600 mt-0.5 w-4"></i>
+                            <span class="font-medium">${ag.waktu}</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-location-dot text-rose-500 mt-0.5 w-4"></i>
+                            <span>${ag.tempat}</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-book text-blue-500 mt-0.5 w-4"></i>
+                            <span>Materi: <strong>${ag.materi}</strong></span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-chalkboard-user text-purple-600 mt-0.5 w-4"></i>
+                            <span>Narasumber: ${ag.narasumber}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-amber-100 flex items-center justify-between">
+                    <span class="text-[11px] text-amber-800 font-semibold"><i class="fa-solid fa-circle-info mr-1"></i> Dibuka untuk guru Informatika</span>
+                    <button onclick="switchTab('presensi')" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition">
+                        Isi Presensi
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function renderPublicLaporan() {
+        const list = document.getElementById('publicLaporanList');
+        list.innerHTML = '';
+        appData.laporan.forEach(lp => {
+            const item = document.createElement('div');
+            item.className = "p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white hover:border-teal-300 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4";
+            item.innerHTML = `
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl flex-shrink-0">
+                        <i class="fa-solid fa-file-invoice text-teal-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${lp.judul}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">${lp.ringkasan}</p>
+                        <p class="text-[11px] text-slate-400 mt-1"><i class="fa-regular fa-calendar mr-1"></i> Tanggal Laporan: ${lp.tanggal} • Format: ${lp.format}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="previewDocument('Laporan Kegiatan', '${lp.judul}', '${lp.ringkasan}', '${lp.tanggal}')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition">
+                        <i class="fa-solid fa-eye mr-1"></i> Preview
+                    </button>
+                    <button onclick="downloadDummyPdf('${lp.judul}.pdf')" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow transition">
+                        <i class="fa-solid fa-download mr-1"></i> Download PDF
+                    </button>
+                </div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function renderPublicRekap() {
+        const filterKeg = document.getElementById('filterRekapKegiatan')?.value || 'all';
+        const tbody = document.getElementById('rekapAbsenTableBody');
+        tbody.innerHTML = '';
+
+        const logs = appData.presensiLog.filter(l => filterKeg === 'all' || l.kegiatanId === filterKeg);
+        if (logs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Belum ada rekap data kehadiran pada kegiatan ini.</td></tr>`;
+            return;
+        }
+
+        logs.forEach((l, idx) => {
+            const tr = document.createElement('tr');
+            tr.className = "hover:bg-slate-50 transition";
+            tr.innerHTML = `
+                <td class="py-3 px-4 font-mono text-[11px] text-slate-400">${idx + 1}</td>
+                <td class="py-3 px-4 font-medium text-slate-800">${l.kegiatanNama}</td>
+                <td class="py-3 px-4 font-mono text-slate-500 text-[11px]">${l.timestamp}</td>
+                <td class="py-3 px-4 font-mono">${l.nip}</td>
+                <td class="py-3 px-4 font-bold text-slate-900">${l.nama}</td>
+                <td class="py-3 px-4">${l.sekolah}</td>
+                <td class="py-3 px-4"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-circle-check mr-1"></i>${l.status}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterRekapTable() {
+        renderPublicRekap();
+    }
+
+    function populateRekapFilter() {
+        const select = document.getElementById('filterRekapKegiatan');
+        if (!select) return;
+        const cur = select.value;
+        select.innerHTML = '<option value="all">Semua Kegiatan</option>';
+        appData.agenda.forEach(ag => {
+            select.innerHTML += `<option value="${ag.id}">${ag.nama}</option>`;
+        });
+        select.value = cur || 'all';
+        renderPublicRekap();
+    }
+
+    function renderPublicNotulen() {
+        const list = document.getElementById('publicNotulenList');
+        list.innerHTML = '';
+        appData.notulen.forEach(n => {
+            const item = document.createElement('div');
+            item.className = "p-5 rounded-2xl border border-slate-200 bg-white hover:border-orange-300 transition";
+            item.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2 mb-3">
+                    <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-orange-500"></i> ${n.nama}
+                    </h4>
+                    <div class="flex items-center gap-2">
+                        <button onclick="previewNotulenModal('${n.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold">
+                            <i class="fa-solid fa-eye mr-1"></i> Preview
+                        </button>
+                        <button onclick="downloadDummyPdf('Notulen_${n.nama}.pdf')" class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-semibold">
+                            <i class="fa-solid fa-download mr-1"></i> Download PDF
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-slate-500 mb-3">
+                    <p><i class="fa-regular fa-clock mr-1 text-slate-400"></i> ${n.waktu}</p>
+                    <p><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> ${n.tempat}</p>
+                    <p><i class="fa-solid fa-user-tie mr-1 text-slate-400"></i> Narasumber: ${n.narasumber}</p>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-700 whitespace-pre-line font-sans">
+                    ${n.isi}
+                </div>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function renderPublicUndangan() {
+        const list = document.getElementById('publicUndanganList');
+        list.innerHTML = '';
+        appData.undangan.forEach(u => {
+            const card = document.createElement('div');
+            card.className = "p-5 rounded-2xl border border-slate-200 bg-white hover:shadow-md transition relative flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="font-mono text-[11px] font-semibold text-slate-500">${u.nomorSurat}</span>
+                        ${u.isBaru ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-700 border border-red-200 animate-pulse"><i class="fa-solid fa-circle text-[6px] mr-1"></i>Baru</span>' : ''}
+                    </div>
+                    <h4 class="font-bold text-slate-900 text-sm leading-snug mb-2">${u.judul}</h4>
+                    <div class="space-y-1 text-xs text-slate-600 mb-4">
+                        <p><i class="fa-regular fa-calendar text-red-500 mr-1.5"></i> Tanggal Acara: ${u.tanggalKegiatan}</p>
+                        <p><i class="fa-solid fa-location-dot text-slate-400 mr-1.5"></i> Lokasi: ${u.tempat}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 pt-3 border-t border-slate-100">
+                    <button onclick="previewDocument('Surat Undangan Resmi', '${u.judul}', 'Nomor Surat: ${u.nomorSurat}\\nTanggal: ${u.tanggalKegiatan}\\nTempat: ${u.tempat}', 'Sidoarjo, 2026')" class="flex-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                        <i class="fa-solid fa-eye mr-1"></i> Preview
+                    </button>
+                    <button onclick="downloadDummyPdf('${u.judul}.pdf')" class="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-semibold shadow">
+                        <i class="fa-solid fa-download mr-1"></i> Download PDF
+                    </button>
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    /* ==========================================================================
+       SERTIFIKAT SEARCH & VERIFICATION
+       ========================================================================== */
+    function searchCertificate() {
+        const q = (document.getElementById('certSearchQuery').value || '').trim().toLowerCase();
+        const container = document.getElementById('certResultContainer');
+        if (!q) {
+            showToast('Silakan masukkan NIP atau Nama Anda terlebih dahulu.', 'info');
+            return;
+        }
+
+        const matches = appData.sertifikat.filter(c => 
+            c.nip.toLowerCase().includes(q) || 
+            c.nama.toLowerCase().includes(q)
+        );
+
+        if (matches.length === 0) {
+            container.innerHTML = `
+                <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 text-center">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500 text-3xl mb-2"></i>
+                    <h4 class="font-bold text-slate-800 text-sm">Sertifikat Belum Ditemukan</h4>
+                    <p class="text-xs text-slate-600 mt-1">Pastikan NIP atau ejaan nama sesuai dengan daftar hadir kegiatan MGMP. Hubungi Sekretariat jika membutuhkan bantuan validasi.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `<h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Ditemukan ${matches.length} Sertifikat Terverifikasi:</h4>`;
+        
+        matches.forEach(cert => {
+            const card = document.createElement('div');
+            card.className = "p-5 rounded-2xl border-2 border-purple-200 bg-gradient-to-br from-purple-50/50 via-white to-purple-50/20 shadow-sm mb-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4";
+            card.innerHTML = `
+                <div class="flex items-start gap-3.5">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-2xl flex-shrink-0 shadow-md shadow-purple-600/20">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <div>
+                        <span class="inline-block px-2.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-800 mb-1">Terverifikasi Resmi MGMP</span>
+                        <h4 class="font-bold text-slate-900 text-base leading-tight">${cert.kegiatan}</h4>
+                        <p class="text-xs font-semibold text-slate-800 mt-1">${cert.nama} (${cert.nip})</p>
+                        <p class="text-xs text-slate-500">${cert.sekolah} • Beban: ${cert.jamPelajaran}</p>
+                        <p class="font-mono text-[10px] text-slate-400 mt-1">No. Sertifikat: ${cert.noSertifikat}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="previewCertificateModal('${cert.id}')" class="flex-1 md:flex-none px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-semibold">
+                        <i class="fa-solid fa-eye mr-1"></i> Preview
+                    </button>
+                    <button onclick="downloadDummyPdf('Sertifikat_${cert.nama}.pdf')" class="flex-1 md:flex-none px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-semibold shadow">
+                        <i class="fa-solid fa-download mr-1"></i> Unduh PDF
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function previewCertificateModal(certId) {
+        const cert = appData.sertifikat.find(c => c.id === certId);
+        if (!cert) return;
+        const modal = document.getElementById('previewDocModal');
+        document.getElementById('previewDocTitle').textContent = `E-Sertifikat Terverifikasi`;
+        document.getElementById('previewDocMeta').textContent = `Nomor: ${cert.noSertifikat}`;
+        
+        const content = document.getElementById('previewDocContent');
+        content.innerHTML = `
+            <div class="border-4 border-double border-purple-800 p-8 rounded-xl bg-white text-center relative overflow-hidden shadow-inner">
+                <div class="absolute -top-10 -right-10 w-36 h-36 bg-purple-100 rounded-full opacity-40"></div>
+                <div class="max-w-xl mx-auto">
+                    <p class="text-xs tracking-widest text-slate-500 uppercase font-semibold">KABUPATEN SIDOARJO</p>
+                    <h2 class="text-xl font-extrabold text-slate-900 mt-1 uppercase tracking-wider text-purple-900">SERTIFIKAT KELULUSAN</h2>
+                    <p class="text-[11px] font-mono text-slate-500 mb-6">No: ${cert.noSertifikat}</p>
+                    
+                    <p class="text-xs text-slate-600">Diberikan secara terhormat kepada:</p>
+                    <h3 class="text-xl font-bold text-slate-900 my-2 underline decoration-purple-600 decoration-2">${cert.nama}</h3>
+                    <p class="text-xs text-slate-600 font-medium">NIP/NUPTK: ${cert.nip} • ${cert.sekolah}</p>
+                    
+                    <p class="text-xs text-slate-700 my-6 leading-relaxed">
+                        Atas partisipasi dan komitmen aktifnya sebagai <strong>PESERTA</strong> dalam kegiatan pelatihan dan pengembangan profesi:<br>
+                        <span class="text-sm font-bold text-slate-900 block mt-1">"${cert.kegiatan}"</span>
+                        diselenggarakan oleh MGMP Informatika SMP Kabupaten Sidoarjo dengan alokasi setara <strong>${cert.jamPelajaran}</strong>.
+                    </p>
+
+                    <div class="flex justify-between items-end mt-8 pt-4 border-t border-slate-200 text-left">
+                        <div class="text-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=85x85&data=VERIFIED_MGMP_SIDOARJO_${cert.noSertifikat}" class="w-16 h-16 border p-1 rounded bg-white shadow-sm inline-block" alt="QR Verifikasi">
+                            <p class="text-[9px] text-slate-400 mt-1">Validasi Keaslian</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-slate-500">Sidoarjo, ${cert.tanggalTerbit}</p>
+                            <p class="text-xs font-semibold text-slate-700 mt-1">Ketua MGMP Informatika SMP</p>
+                            <div class="h-12 flex items-center justify-center font-serif text-slate-400 italic text-xs">
+                                ( Ditandatangani Elektronik )
+                            </div>
+                            <p class="text-xs font-bold text-slate-900">${appData.pengurus.find(p=>p.jabatan==='Ketua')?.nama || 'Drs. Bambang Sudarsono, M.Pd.'}</p>
+                            <p class="text-[10px] text-slate-500">NIP. 197503122000031004</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('previewDownloadBtn').onclick = () => downloadDummyPdf(`Sertifikat_${cert.nama}.pdf`);
+        modal.classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       PRESENSI CAMERA & QR SCANNER
+       ========================================================================== */
+    let html5QrCodeScanner = null;
+
+    function populatePresensiDropdown() {
+        const select = document.getElementById('presensiSelectKegiatan');
+        if (!select) return;
+        select.innerHTML = '';
+        appData.agenda.forEach(ag => {
+            select.innerHTML += `<option value="${ag.id}">${ag.nama}</option>`;
+        });
+    }
+
+    function autoFillPresensiName() {
+        const nip = document.getElementById('presensiNIP').value.trim();
+        const found = appData.anggota.find(a => a.nip === nip);
+        if (found) {
+            document.getElementById('presensiNama').value = found.nama;
+            document.getElementById('presensiSekolah').value = found.sekolah;
+            showToast(`Data guru teridentifikasi: ${found.nama}`, 'info');
+        }
+    }
+
+    function startQrScanner() {
+        const qrBox = document.getElementById('qrReader');
+        qrBox.innerHTML = '';
+
+        try {
+            if (typeof Html5Qrcode !== 'undefined') {
+                html5QrCodeScanner = new Html5Qrcode("qrReader");
+                html5QrCodeScanner.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 200, height: 200 } },
+                    (decodedText, decodedResult) => {
+                        stopQrScanner();
+                        handleQrScanSuccess(decodedText);
+                    },
+                    (errorMessage) => {
+                        // ignore frame scan misses
+                    }
+                ).catch(err => {
+                    simulateQrCameraFallback();
+                });
+            } else {
+                simulateQrCameraFallback();
+            }
+        } catch(e) {
+            simulateQrCameraFallback();
+        }
+    }
+
+    function stopQrScanner() {
+        if (html5QrCodeScanner) {
+            try {
+                html5QrCodeScanner.stop().then(() => {
+                    html5QrCodeScanner.clear();
+                    document.getElementById('qrReader').innerHTML = '<span>Kamera dihentikan.</span>';
+                }).catch(()=>{});
+            } catch(e) {}
+            html5QrCodeScanner = null;
+        }
+    }
+
+    function simulateQrCameraFallback() {
+        // Fallback simulate when camera is not supported or iframe blocked
+        const qrBox = document.getElementById('qrReader');
+        qrBox.innerHTML = `
+            <div class="p-4 text-center">
+                <i class="fa-solid fa-video-slash text-slate-400 text-2xl mb-2"></i>
+                <p class="text-xs text-slate-300 mb-2">Akses kamera fisik terkunci oleh izin browser/iFrame.</p>
+                <button onclick="triggerSimulatedScan()" class="px-3 py-1.5 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-semibold">
+                    Simulasikan Scan QR Sukses
+                </button>
+            </div>
+        `;
+    }
+
+    function triggerSimulatedScan() {
+        const activeKeg = appData.agenda[0];
+        handleQrScanSuccess(activeKeg ? activeKeg.id : 'ag1');
+    }
+
+    function handleQrScanSuccess(decodedText) {
+        showToast('QR Code Valid Terbaca! Mengisi form presensi...', 'success');
+        const matched = appData.agenda.find(a => a.id === decodedText || a.nama.includes(decodedText));
+        if (matched) {
+            document.getElementById('presensiSelectKegiatan').value = matched.id;
+        }
+        document.getElementById('presensiNIP').focus();
+    }
+
+    function submitPresensi(e) {
+        e.preventDefault();
+        const kegId = document.getElementById('presensiSelectKegiatan').value;
+        const keg = appData.agenda.find(a => a.id === kegId) || appData.agenda[0];
+        const nip = document.getElementById('presensiNIP').value.trim();
+        const nama = document.getElementById('presensiNama').value.trim();
+        const sekolah = document.getElementById('presensiSekolah').value.trim();
+
+        const now = new Date();
+        const timeStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + 
+                        now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+        const newLog = {
+            id: 'prl' + Date.now(),
+            kegiatanId: kegId,
+            kegiatanNama: keg ? keg.nama : 'Kegiatan MGMP',
+            nip: nip,
+            nama: nama,
+            sekolah: sekolah,
+            timestamp: timeStr,
+            status: 'Hadir Tepat Waktu'
+        };
+
+        appData.presensiLog.unshift(newLog);
+        saveDatabase();
+
+        // Check if member already registered, if not register to list
+        if (!appData.anggota.some(a => a.nip === nip)) {
+            appData.anggota.push({
+                id: 'a' + Date.now(),
+                nip: nip,
+                nama: nama,
+                gender: 'L',
+                sekolah: sekolah,
+                status: 'Aktif'
+            });
+            saveDatabase();
+        }
+
+        renderPublicRekap();
+        document.getElementById('publicPresensiForm').reset();
+        showToast(`Terima kasih Bapak/Ibu ${nama}. Presensi berhasil dicatat!`, 'success');
+    }
+
+    /* ==========================================================================
+       ADMINISTRATOR TABLES & CRUD OPERATIONS
+       ========================================================================== */
+    function renderAdminTables() {
+        // Settings form values
+        document.getElementById('settingNamaMgmp').value = appData.pengaturan.namaMgmp;
+        document.getElementById('settingAlamatSekretariat').value = appData.pengaturan.alamatSekretariat;
+        
+        renderAdminPengurusTable();
+        renderAdminPembinaTable();
+        renderAdminAnggotaTable();
+        renderAdminProkerTable();
+        renderAdminAgendaTable();
+        renderAdminLaporanTable();
+        renderAdminSertifikatTable();
+        renderAdminPresensiGrid();
+        renderAdminNotulenTable();
+        renderAdminUndanganTable();
+    }
+
+    // 1. Settings Save
+    function saveSettings(e) {
+        e.preventDefault();
+        appData.pengaturan.namaMgmp = document.getElementById('settingNamaMgmp').value.trim();
+        appData.pengaturan.alamatSekretariat = document.getElementById('settingAlamatSekretariat').value.trim();
+        saveDatabase();
+        renderHeaderAndSettings();
+        showToast('Pengaturan identitas MGMP berhasil diperbarui!', 'success');
+    }
+
+    function previewLogoFile(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appData.pengaturan.logoUrl = e.target.result;
+                renderHeaderAndSettings();
+                showToast('Logo berhasil diunggah dan diperbarui!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // 2. Pengurus Admin
+    function renderAdminPengurusTable() {
+        const tbody = document.getElementById('adminPengurusTableBody');
+        tbody.innerHTML = '';
+        appData.pengurus.forEach((p, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 font-semibold text-brand-700">${p.jabatan}</td>
+                <td class="py-2.5 px-3 font-mono">${p.nip}</td>
+                <td class="py-2.5 px-3 font-bold text-slate-800">${p.nama}</td>
+                <td class="py-2.5 px-3">${p.gender}</td>
+                <td class="py-2.5 px-3">${p.sekolah}</td>
+                <td class="py-2.5 px-3 text-right space-x-1">
+                    <button onclick="deletePengurus('${p.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openPengurusModal() {
+        showCrudModal('Tambah Susunan Pengurus', `
+            <form onsubmit="handleSavePengurus(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIP / NUPTK</label>
+                    <input type="text" id="inpPengurusNIP" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                    <input type="text" id="inpPengurusNama" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis Kelamin</label>
+                        <select id="inpPengurusGender" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="L">Laki-laki (L)</option>
+                            <option value="P">Perempuan (P)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                        <select id="inpPengurusJabatan" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="Ketua">Ketua</option>
+                            <option value="Wakil Ketua">Wakil Ketua</option>
+                            <option value="Sekretaris">Sekretaris</option>
+                            <option value="Bendahara">Bendahara</option>
+                            <option value="Anggota">Anggota</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Asal Sekolah</label>
+                    <input type="text" id="inpPengurusSekolah" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-xs">Simpan Pengurus</button>
+            </form>
+        `);
+    }
+
+    function handleSavePengurus(e) {
+        e.preventDefault();
+        appData.pengurus.push({
+            id: 'p' + Date.now(),
+            nip: document.getElementById('inpPengurusNIP').value.trim(),
+            nama: document.getElementById('inpPengurusNama').value.trim(),
+            gender: document.getElementById('inpPengurusGender').value,
+            jabatan: document.getElementById('inpPengurusJabatan').value,
+            sekolah: document.getElementById('inpPengurusSekolah').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminPengurusTable();
+        renderPublicPengurus();
+        showToast('Data Pengurus berhasil ditambahkan!', 'success');
+    }
+
+    function deletePengurus(id) {
+        appData.pengurus = appData.pengurus.filter(p => p.id !== id);
+        saveDatabase();
+        renderAdminPengurusTable();
+        renderPublicPengurus();
+        showToast('Pengurus dihapus!', 'info');
+    }
+
+    // 3. Pembina Admin
+    function renderAdminPembinaTable() {
+        const tbody = document.getElementById('adminPembinaTableBody');
+        tbody.innerHTML = '';
+        appData.pembina.forEach((p) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 font-semibold text-indigo-700">${p.jabatan}</td>
+                <td class="py-2.5 px-3 font-mono">${p.nip}</td>
+                <td class="py-2.5 px-3 font-bold text-slate-800">${p.nama}</td>
+                <td class="py-2.5 px-3">${p.gender}</td>
+                <td class="py-2.5 px-3">${p.sekolah}</td>
+                <td class="py-2.5 px-3 text-right">
+                    <button onclick="deletePembina('${p.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openPembinaModal() {
+        showCrudModal('Tambah Daftar Pembina', `
+            <form onsubmit="handleSavePembina(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIP / NUPTK</label>
+                    <input type="text" id="inpPembinaNIP" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap Pembina</label>
+                    <input type="text" id="inpPembinaNama" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">L/P</label>
+                        <select id="inpPembinaGender" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="L">L</option>
+                            <option value="P">P</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                        <select id="inpPembinaJabatan" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="Koordinator">Koordinator</option>
+                            <option value="Anggota">Anggota</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Asal Sekolah / Instansi</label>
+                    <input type="text" id="inpPembinaSekolah" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs">Simpan Pembina</button>
+            </form>
+        `);
+    }
+
+    function handleSavePembina(e) {
+        e.preventDefault();
+        appData.pembina.push({
+            id: 'pb' + Date.now(),
+            nip: document.getElementById('inpPembinaNIP').value.trim(),
+            nama: document.getElementById('inpPembinaNama').value.trim(),
+            gender: document.getElementById('inpPembinaGender').value,
+            jabatan: document.getElementById('inpPembinaJabatan').value,
+            sekolah: document.getElementById('inpPembinaSekolah').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminPembinaTable();
+        renderPublicPembina();
+        showToast('Data Pembina berhasil ditambahkan!', 'success');
+    }
+
+    function deletePembina(id) {
+        appData.pembina = appData.pembina.filter(p => p.id !== id);
+        saveDatabase();
+        renderAdminPembinaTable();
+        renderPublicPembina();
+        showToast('Data pembina dihapus!', 'info');
+    }
+
+    // 4. Anggota Admin
+    function renderAdminAnggotaTable() {
+        const tbody = document.getElementById('adminAnggotaTableBody');
+        tbody.innerHTML = '';
+        appData.anggota.forEach((a) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 font-mono">${a.nip}</td>
+                <td class="py-2.5 px-3 font-semibold text-slate-900">${a.nama}</td>
+                <td class="py-2.5 px-3">${a.gender}</td>
+                <td class="py-2.5 px-3">${a.sekolah}</td>
+                <td class="py-2.5 px-3">
+                    <button onclick="toggleAnggotaStatus('${a.id}')" class="px-2 py-0.5 rounded text-[10px] font-bold ${a.status === 'Aktif' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'}">
+                        ${a.status} (klik ubah)
+                    </button>
+                </td>
+                <td class="py-2.5 px-3 text-right">
+                    <button onclick="deleteAnggota('${a.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openAnggotaModal() {
+        showCrudModal('Tambah Anggota Baru', `
+            <form onsubmit="handleSaveAnggota(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIP / NUPTK</label>
+                    <input type="text" id="inpAnggotaNIP" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Guru</label>
+                    <input type="text" id="inpAnggotaNama" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">L/P</label>
+                        <select id="inpAnggotaGender" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="L">L</option>
+                            <option value="P">P</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status Keanggotaan</label>
+                        <select id="inpAnggotaStatus" class="w-full text-xs px-3 py-2 border rounded-lg">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Tidak Aktif">Tidak Aktif</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Asal Sekolah</label>
+                    <input type="text" id="inpAnggotaSekolah" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs">Simpan Anggota</button>
+            </form>
+        `);
+    }
+
+    function handleSaveAnggota(e) {
+        e.preventDefault();
+        appData.anggota.push({
+            id: 'a' + Date.now(),
+            nip: document.getElementById('inpAnggotaNIP').value.trim(),
+            nama: document.getElementById('inpAnggotaNama').value.trim(),
+            gender: document.getElementById('inpAnggotaGender').value,
+            status: document.getElementById('inpAnggotaStatus').value,
+            sekolah: document.getElementById('inpAnggotaSekolah').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminAnggotaTable();
+        renderPublicAnggota();
+        showToast('Anggota berhasil didaftarkan!', 'success');
+    }
+
+    function toggleAnggotaStatus(id) {
+        const item = appData.anggota.find(a => a.id === id);
+        if (item) {
+            item.status = item.status === 'Aktif' ? 'Tidak Aktif' : 'Aktif';
+            saveDatabase();
+            renderAdminAnggotaTable();
+            renderPublicAnggota();
+            showToast(`Status ${item.nama} diubah menjadi ${item.status}`, 'info');
+        }
+    }
+
+    function deleteAnggota(id) {
+        appData.anggota = appData.anggota.filter(a => a.id !== id);
+        saveDatabase();
+        renderAdminAnggotaTable();
+        renderPublicAnggota();
+        showToast('Data anggota dihapus!', 'info');
+    }
+
+    function downloadExcelTemplate() {
+        const csvContent = "data:text/csv;charset=utf-8,NIP_NUPTK,NAMA_LENGKAP,JENIS_KELAMIN,ASAL_SEKOLAH,STATUS\n" +
+                           "198501012010011001,Contoh Guru Informatika S.Kom,L,SMPN 1 Sidoarjo,Aktif\n" +
+                           "199002022015022002,Contoh Guru Kedua S.Pd,P,SMPN 2 Candi,Aktif";
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "Template_Data_Anggota_MGMP_Informatika_Sidoarjo.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('Template Excel/CSV berhasil diunduh!', 'success');
+    }
+
+    function importExcelSimulate(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const text = evt.target.result;
+            const lines = text.split('\n');
+            let added = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                if (parts.length >= 4 && parts[0].trim()) {
+                    appData.anggota.push({
+                        id: 'a' + Date.now() + i,
+                        nip: parts[0].replace(/"/g, '').trim(),
+                        nama: parts[1].replace(/"/g, '').trim(),
+                        gender: (parts[2] || 'L').replace(/"/g, '').trim().toUpperCase(),
+                        sekolah: parts[3].replace(/"/g, '').trim(),
+                        status: (parts[4] || 'Aktif').replace(/"/g, '').trim()
+                    });
+                    added++;
+                }
+            }
+            saveDatabase();
+            renderAdminAnggotaTable();
+            renderPublicAnggota();
+            showToast(`Berhasil mengimpor ${added} data anggota dari file!`, 'success');
+        };
+        reader.readAsText(file);
+    }
+
+    // 5. Proker Admin
+    function renderAdminProkerTable() {
+        const list = document.getElementById('adminProkerList');
+        list.innerHTML = '';
+        appData.proker.forEach(p => {
+            const div = document.createElement('div');
+            div.className = "p-3.5 rounded-xl border border-slate-200 flex items-center justify-between";
+            div.innerHTML = `
+                <div>
+                    <h5 class="font-bold text-xs text-slate-800">${p.judul}</h5>
+                    <p class="text-[11px] text-slate-500">${p.keterangan} • Format: ${p.format}</p>
+                </div>
+                <button onclick="deleteProker('${p.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function openProkerModal() {
+        showCrudModal('Upload Program Kerja (DOC / PDF)', `
+            <form onsubmit="handleSaveProker(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Program Kerja</label>
+                    <input type="text" id="inpProkerJudul" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan Singkat</label>
+                    <textarea id="inpProkerKet" rows="2" required class="w-full text-xs px-3 py-2 border rounded-lg"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Berkas (DOCX / PDF)</label>
+                    <input type="file" id="inpProkerFile" accept=".pdf,.doc,.docx" required class="w-full text-xs p-1 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white font-semibold rounded-xl text-xs">Unggah Dokumen</button>
+            </form>
+        `);
+    }
+
+    function handleSaveProker(e) {
+        e.preventDefault();
+        const f = document.getElementById('inpProkerFile').files[0];
+        appData.proker.push({
+            id: 'pr' + Date.now(),
+            judul: document.getElementById('inpProkerJudul').value.trim(),
+            tanggal: new Date().toISOString().split('T')[0],
+            format: f ? (f.name.endsWith('.pdf') ? 'PDF' : 'DOCX') : 'PDF',
+            ukuran: f ? (f.size / (1024*1024)).toFixed(1) + ' MB' : '1.5 MB',
+            keterangan: document.getElementById('inpProkerKet').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminProkerTable();
+        renderPublicProker();
+        showToast('Program Kerja berhasil diunggah!', 'success');
+    }
+
+    function deleteProker(id) {
+        appData.proker = appData.proker.filter(p => p.id !== id);
+        saveDatabase();
+        renderAdminProkerTable();
+        renderPublicProker();
+        showToast('Program Kerja dihapus!', 'info');
+    }
+
+    // 6. Agenda Admin
+    function renderAdminAgendaTable() {
+        const tbody = document.getElementById('adminAgendaTableBody');
+        tbody.innerHTML = '';
+        appData.agenda.forEach(ag => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 font-bold text-slate-800">${ag.nama}</td>
+                <td class="py-2.5 px-3 text-slate-600">${ag.waktu}</td>
+                <td class="py-2.5 px-3">${ag.tempat}</td>
+                <td class="py-2.5 px-3">${ag.materi}</td>
+                <td class="py-2.5 px-3">${ag.narasumber}</td>
+                <td class="py-2.5 px-3 text-right">
+                    <button onclick="deleteAgenda('${ag.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openAgendaModal() {
+        showCrudModal('Tambah Agenda Kegiatan Baru', `
+            <form onsubmit="handleSaveAgenda(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan</label>
+                    <input type="text" id="inpAgendaNama" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Hari / Tanggal / Jam</label>
+                    <input type="text" id="inpAgendaWaktu" required placeholder="Contoh: Kamis, 29 Oktober 2026, 08:30 WIB" class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat</label>
+                    <input type="text" id="inpAgendaTempat" required placeholder="Aula SMPN 1 Sidoarjo" class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Materi</label>
+                    <input type="text" id="inpAgendaMateri" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Narasumber</label>
+                    <input type="text" id="inpAgendaNarasumber" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold rounded-xl text-xs">Simpan Agenda</button>
+            </form>
+        `);
+    }
+
+    function handleSaveAgenda(e) {
+        e.preventDefault();
+        appData.agenda.push({
+            id: 'ag' + Date.now(),
+            nama: document.getElementById('inpAgendaNama').value.trim(),
+            waktu: document.getElementById('inpAgendaWaktu').value.trim(),
+            tempat: document.getElementById('inpAgendaTempat').value.trim(),
+            materi: document.getElementById('inpAgendaMateri').value.trim(),
+            narasumber: document.getElementById('inpAgendaNarasumber').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminAgendaTable();
+        renderPublicAgenda();
+        populatePresensiDropdown();
+        populateRekapFilter();
+        showToast('Agenda kegiatan baru berhasil disimpan!', 'success');
+    }
+
+    function deleteAgenda(id) {
+        appData.agenda = appData.agenda.filter(a => a.id !== id);
+        saveDatabase();
+        renderAdminAgendaTable();
+        renderPublicAgenda();
+        populatePresensiDropdown();
+        showToast('Agenda dihapus!', 'info');
+    }
+
+    // 7. Laporan Admin (Tambah, Edit, Hapus)
+    function renderAdminLaporanTable() {
+        const list = document.getElementById('adminLaporanList');
+        list.innerHTML = '';
+        appData.laporan.forEach(lp => {
+            const div = document.createElement('div');
+            div.className = "p-3.5 rounded-xl border border-slate-200 flex items-center justify-between";
+            div.innerHTML = `
+                <div>
+                    <h5 class="font-bold text-xs text-slate-800">${lp.judul}</h5>
+                    <p class="text-[11px] text-slate-500">${lp.ringkasan} • Format: ${lp.format}</p>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="openEditLaporanModal('${lp.id}')" class="text-blue-600 hover:text-blue-800 p-1"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="deleteLaporan('${lp.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function openLaporanModal() {
+        showCrudModal('Tambah Laporan Kegiatan (Upload PDF/DOC)', `
+            <form onsubmit="handleSaveLaporan(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Laporan Kegiatan</label>
+                    <input type="text" id="inpLaporanJudul" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Ringkasan Pelaksanaan</label>
+                    <textarea id="inpLaporanRingkasan" rows="2" required class="w-full text-xs px-3 py-2 border rounded-lg"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Unggah Berkas (PDF / DOC)</label>
+                    <input type="file" id="inpLaporanFile" accept=".pdf,.doc,.docx" class="w-full text-xs p-1 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs">Simpan Laporan</button>
+            </form>
+        `);
+    }
+
+    function openEditLaporanModal(id) {
+        const item = appData.laporan.find(l => l.id === id);
+        if (!item) return;
+        showCrudModal('Edit Laporan Kegiatan', `
+            <form onsubmit="handleUpdateLaporan(event, '${id}')" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Judul Laporan</label>
+                    <input type="text" id="editLaporanJudul" value="${item.judul}" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Ringkasan</label>
+                    <textarea id="editLaporanRingkasan" rows="2" required class="w-full text-xs px-3 py-2 border rounded-lg">${item.ringkasan}</textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl text-xs">Simpan Perubahan</button>
+            </form>
+        `);
+    }
+
+    function handleSaveLaporan(e) {
+        e.preventDefault();
+        const f = document.getElementById('inpLaporanFile').files[0];
+        appData.laporan.push({
+            id: 'lp' + Date.now(),
+            judul: document.getElementById('inpLaporanJudul').value.trim(),
+            tanggal: new Date().toISOString().split('T')[0],
+            format: f ? (f.name.endsWith('.pdf') ? 'PDF' : 'DOCX') : 'PDF',
+            ringkasan: document.getElementById('inpLaporanRingkasan').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminLaporanTable();
+        renderPublicLaporan();
+        showToast('Laporan kegiatan baru ditambahkan!', 'success');
+    }
+
+    function handleUpdateLaporan(e, id) {
+        e.preventDefault();
+        const item = appData.laporan.find(l => l.id === id);
+        if (item) {
+            item.judul = document.getElementById('editLaporanJudul').value.trim();
+            item.ringkasan = document.getElementById('editLaporanRingkasan').value.trim();
+            saveDatabase();
+            closeCrudModal();
+            renderAdminLaporanTable();
+            renderPublicLaporan();
+            showToast('Laporan berhasil diperbarui!', 'success');
+        }
+    }
+
+    function deleteLaporan(id) {
+        appData.laporan = appData.laporan.filter(l => l.id !== id);
+        saveDatabase();
+        renderAdminLaporanTable();
+        renderPublicLaporan();
+        showToast('Laporan dihapus!', 'info');
+    }
+
+    // 8. Sertifikat Admin
+    function renderAdminSertifikatTable() {
+        const tbody = document.getElementById('adminSertifikatTableBody');
+        tbody.innerHTML = '';
+        appData.sertifikat.forEach(cert => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="py-2.5 px-3 font-mono font-bold text-purple-700">${cert.noSertifikat}</td>
+                <td class="py-2.5 px-3">${cert.kegiatan}</td>
+                <td class="py-2.5 px-3"><strong>${cert.nama}</strong> (${cert.nip})</td>
+                <td class="py-2.5 px-3 text-slate-500">PDF Terverifikasi</td>
+                <td class="py-2.5 px-3 text-right">
+                    <button onclick="deleteSertifikat('${cert.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openSertifikatModal() {
+        // Build option list from anggota
+        let memberOptions = '';
+        appData.anggota.forEach(a => {
+            memberOptions += `<option value="${a.nip}">${a.nama} - ${a.sekolah} (${a.nip})</option>`;
+        });
+
+        let agendaOptions = '';
+        appData.agenda.forEach(ag => {
+            agendaOptions += `<option value="${ag.nama}">${ag.nama}</option>`;
+        });
+
+        showCrudModal('Terbitkan E-Sertifikat untuk Peserta', `
+            <form onsubmit="handleSaveSertifikat(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Sertifikat</label>
+                    <input type="text" id="inpCertNo" required value="421.3/${Math.floor(Math.random()*900+100)}/MGMP-INF/SDA/2026" class="w-full text-xs px-3 py-2 border rounded-lg font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Kegiatan</label>
+                    <select id="inpCertKegiatan" class="w-full text-xs px-3 py-2 border rounded-lg">
+                        ${agendaOptions}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pilih Peserta Terdaftar (Terkoneksi Guru)</label>
+                    <select id="inpCertPesertaNip" class="w-full text-xs px-3 py-2 border rounded-lg">
+                        ${memberOptions}
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Beban Jam Pelajaran</label>
+                        <input type="text" id="inpCertJP" value="32 JP" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Upload File Template PDF</label>
+                        <input type="file" accept=".pdf" class="w-full text-xs p-1 border rounded-lg">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl text-xs">Terbitkan Sertifikat</button>
+            </form>
+        `);
+    }
+
+    function handleSaveSertifikat(e) {
+        e.preventDefault();
+        const nip = document.getElementById('inpCertPesertaNip').value;
+        const member = appData.anggota.find(a => a.nip === nip);
+        if (!member) return;
+
+        appData.sertifikat.push({
+            id: 'cert' + Date.now(),
+            noSertifikat: document.getElementById('inpCertNo').value.trim(),
+            kegiatan: document.getElementById('inpCertKegiatan').value,
+            nip: member.nip,
+            nama: member.nama,
+            sekolah: member.sekolah,
+            jamPelajaran: document.getElementById('inpCertJP').value.trim(),
+            tanggalTerbit: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminSertifikatTable();
+        showToast(`Sertifikat berhasil diterbitkan untuk ${member.nama}!`, 'success');
+    }
+
+    function deleteSertifikat(id) {
+        appData.sertifikat = appData.sertifikat.filter(c => c.id !== id);
+        saveDatabase();
+        renderAdminSertifikatTable();
+        showToast('Sertifikat dihapus!', 'info');
+    }
+
+    // 9. Presensi Admin (Sesi QR Generator)
+    function renderAdminPresensiGrid() {
+        const grid = document.getElementById('adminPresensiGrid');
+        grid.innerHTML = '';
+        appData.agenda.forEach(ag => {
+            const card = document.createElement('div');
+            card.className = "p-4 rounded-xl border border-slate-200 bg-white flex flex-col justify-between";
+            card.innerHTML = `
+                <div>
+                    <h5 class="font-bold text-xs text-slate-800 leading-snug">${ag.nama}</h5>
+                    <p class="text-[11px] text-slate-500 mt-1"><i class="fa-regular fa-clock mr-1"></i> ${ag.waktu}</p>
+                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i> ${ag.tempat}</p>
+                </div>
+                <div class="mt-4 pt-3 border-t flex items-center justify-between">
+                    <span class="text-[11px] font-semibold text-slate-600">
+                        Kehadiran: ${appData.presensiLog.filter(l=>l.kegiatanId===ag.id).length} Guru
+                    </span>
+                    <button onclick="showQrForEvent('${ag.id}', '${ag.nama}')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-semibold">
+                        <i class="fa-solid fa-qrcode mr-1"></i> Buka QR Acara
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function showQrForEvent(agId, nama) {
+        const modal = document.getElementById('qrCodeModal');
+        document.getElementById('qrModalTitle').textContent = `Presensi: ${nama}`;
+        document.getElementById('qrCodeImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(agId)}`;
+        modal.classList.remove('hidden');
+    }
+
+    function closeQrModal() {
+        document.getElementById('qrCodeModal').classList.add('hidden');
+    }
+
+    function openPresensiModal() {
+        openAgendaModal(); // Create session corresponds with creating agenda
+    }
+
+    // 10. Notulen Admin
+    function renderAdminNotulenTable() {
+        const list = document.getElementById('adminNotulenList');
+        list.innerHTML = '';
+        appData.notulen.forEach(n => {
+            const card = document.createElement('div');
+            card.className = "p-4 rounded-xl border border-slate-200 bg-white";
+            card.innerHTML = `
+                <div class="flex items-center justify-between pb-2 border-b mb-2">
+                    <h5 class="font-bold text-xs text-slate-800">${n.nama}</h5>
+                    <button onclick="deleteNotulen('${n.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <p class="text-[11px] text-slate-500">Materi: ${n.materi} | Narasumber: ${n.narasumber}</p>
+                <div class="text-[11px] text-slate-600 mt-2 bg-slate-50 p-2.5 rounded-lg whitespace-pre-line font-mono">
+                    ${n.isi}
+                </div>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function openNotulenModal() {
+        showCrudModal('Buat Notulen Pertemuan (Isian Manual)', `
+            <form onsubmit="handleSaveNotulen(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan / Pertemuan</label>
+                    <input type="text" id="inpNotNama" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hari/Tanggal/Jam</label>
+                        <input type="text" id="inpNotWaktu" required placeholder="Kamis, 29 Okt 2026, 09:00" class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat</label>
+                        <input type="text" id="inpNotTempat" required placeholder="SMPN 1 Sidoarjo" class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Materi</label>
+                        <input type="text" id="inpNotMateri" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Narasumber</label>
+                        <input type="text" id="inpNotNarasumber" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Isian Notulen Manual (Hasil Diskusi & Kesepakatan)</label>
+                    <textarea id="inpNotIsi" rows="5" required placeholder="Tuliskan poin-poin keputusan rapat di sini..." class="w-full text-xs px-3 py-2 border rounded-lg font-sans"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-xl text-xs">Simpan Notulen</button>
+            </form>
+        `);
+    }
+
+    function handleSaveNotulen(e) {
+        e.preventDefault();
+        appData.notulen.push({
+            id: 'not' + Date.now(),
+            nama: document.getElementById('inpNotNama').value.trim(),
+            waktu: document.getElementById('inpNotWaktu').value.trim(),
+            tempat: document.getElementById('inpNotTempat').value.trim(),
+            materi: document.getElementById('inpNotMateri').value.trim(),
+            narasumber: document.getElementById('inpNotNarasumber').value.trim(),
+            isi: document.getElementById('inpNotIsi').value.trim()
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminNotulenTable();
+        renderPublicNotulen();
+        showToast('Notulen rapat berhasil disimpan!', 'success');
+    }
+
+    function deleteNotulen(id) {
+        appData.notulen = appData.notulen.filter(n => n.id !== id);
+        saveDatabase();
+        renderAdminNotulenTable();
+        renderPublicNotulen();
+        showToast('Notulen dihapus!', 'info');
+    }
+
+    // 11. Undangan Admin (Upload & Notifikasi Trigger)
+    function renderAdminUndanganTable() {
+        const list = document.getElementById('adminUndanganList');
+        list.innerHTML = '';
+        appData.undangan.forEach(u => {
+            const div = document.createElement('div');
+            div.className = "p-3.5 rounded-xl border border-slate-200 flex items-center justify-between";
+            div.innerHTML = `
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h5 class="font-bold text-xs text-slate-800">${u.judul}</h5>
+                        ${u.isBaru ? '<span class="px-1.5 py-0.2 bg-red-100 text-red-700 text-[9px] font-bold rounded">Baru</span>' : ''}
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono">${u.nomorSurat} • ${u.tanggalKegiatan}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleUndanganBaru('${u.id}')" class="text-xs text-slate-600 hover:text-brand-700 font-semibold underline">
+                        ${u.isBaru ? 'Set Sudah Dibaca' : 'Tandai Baru'}
+                    </button>
+                    <button onclick="deleteUndangan('${u.id}')" class="text-rose-600 hover:text-rose-800 p-1"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function openUndanganModal() {
+        showCrudModal('Upload Surat Undangan Baru (DOC/PDF)', `
+            <form onsubmit="handleSaveUndangan(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat Resmi</label>
+                    <input type="text" id="inpUndNomor" required value="005/${Math.floor(Math.random()*800+100)}/MGMP-INF/X/2026" class="w-full text-xs px-3 py-2 border rounded-lg font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Judul / Perihal Undangan</label>
+                    <input type="text" id="inpUndJudul" required class="w-full text-xs px-3 py-2 border rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Hari & Tanggal Pelaksanaan</label>
+                        <input type="text" id="inpUndTgl" required placeholder="Kamis, 29 Oktober 2026" class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tempat Acara</label>
+                        <input type="text" id="inpUndTempat" required placeholder="SMPN 1 Sidoarjo" class="w-full text-xs px-3 py-2 border rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Unggah Dokumen (DOCX / PDF)</label>
+                    <input type="file" id="inpUndFile" accept=".pdf,.doc,.docx" required class="w-full text-xs p-1 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-xs">Terbitkan & Aktifkan Notifikasi</button>
+            </form>
+        `);
+    }
+
+    function handleSaveUndangan(e) {
+        e.preventDefault();
+        appData.undangan.unshift({
+            id: 'und' + Date.now(),
+            nomorSurat: document.getElementById('inpUndNomor').value.trim(),
+            judul: document.getElementById('inpUndJudul').value.trim(),
+            tanggalKegiatan: document.getElementById('inpUndTgl').value.trim(),
+            tempat: document.getElementById('inpUndTempat').value.trim(),
+            isBaru: true,
+            format: 'PDF',
+            fileUrl: '#'
+        });
+        saveDatabase();
+        closeCrudModal();
+        renderAdminUndanganTable();
+        renderPublicUndangan();
+        updateUndanganNotifBadge();
+        showToast('Undangan baru diterbitkan! Notifikasi badge aktif pada beranda.', 'success');
+    }
+
+    function toggleUndanganBaru(id) {
+        const item = appData.undangan.find(u => u.id === id);
+        if (item) {
+            item.isBaru = !item.isBaru;
+            saveDatabase();
+            renderAdminUndanganTable();
+            renderPublicUndangan();
+            updateUndanganNotifBadge();
+            showToast('Status notifikasi diperbarui.', 'info');
+        }
+    }
+
+    function deleteUndangan(id) {
+        appData.undangan = appData.undangan.filter(u => u.id !== id);
+        saveDatabase();
+        renderAdminUndanganTable();
+        renderPublicUndangan();
+        updateUndanganNotifBadge();
+        showToast('Undangan dihapus!', 'info');
+    }
+
+    function updateUndanganNotifBadge() {
+        const newCount = appData.undangan.filter(u => u.isBaru).length;
+        const badge = document.getElementById('navNotifBadge');
+        const dot = document.getElementById('tabNotifDot');
+        if (newCount > 0) {
+            if (badge) {
+                badge.textContent = newCount;
+                badge.classList.remove('hidden');
+            }
+            if (dot) dot.classList.remove('hidden');
+        } else {
+            if (badge) badge.classList.add('hidden');
+            if (dot) dot.classList.add('hidden');
+        }
+    }
+
+    /* ==========================================================================
+       MODAL HELPER & TOASTS
+       ========================================================================== */
+    function showCrudModal(title, htmlContent) {
+        document.getElementById('crudModalTitle').textContent = title;
+        document.getElementById('crudModalBody').innerHTML = htmlContent;
+        document.getElementById('crudModal').classList.remove('hidden');
+    }
+
+    function closeCrudModal() {
+        document.getElementById('crudModal').classList.add('hidden');
+    }
+
+    function previewDocument(type, title, desc, meta) {
+        const modal = document.getElementById('previewDocModal');
+        document.getElementById('previewDocTitle').textContent = `Pratinjau: ${title}`;
+        document.getElementById('previewDocMeta').textContent = `${type} • ${meta}`;
+        
+        const content = document.getElementById('previewDocContent');
+        content.innerHTML = `
+            <div class="bg-white p-6 rounded-xl border border-slate-200 text-left font-serif leading-relaxed">
+                <div class="border-b-2 border-slate-800 pb-3 mb-4 text-center">
+                    <h3 class="text-sm font-bold uppercase tracking-wider">MUSYAWARAH GURU MATA PELAJARAN (MGMP) INFORMATIKA</h3>
+                    <p class="text-xs">SEKOLAH MENENGAH PERTAMA (SMP) KABUPATEN SIDOARJO</p>
+                    <p class="text-[10px] text-slate-500 italic">Sekretariat: SMPN 1 Sidoarjo, Jl. Ponti No. 09 Sidoarjo</p>
+                </div>
+                <h4 class="text-sm font-bold text-center mb-3 text-slate-900">${title}</h4>
+                <p class="text-xs text-slate-700 whitespace-pre-line">${desc}</p>
+                
+                <div class="mt-8 pt-4 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500 font-sans">
+                    <span>Dokumen Digital Resmi MGMP</span>
+                    <span>Tervalidasi Sistem 2026</span>
+                </div>
+            </div>
+        `;
+        document.getElementById('previewDownloadBtn').onclick = () => downloadDummyPdf(`${title}.pdf`);
+        modal.classList.remove('hidden');
+    }
+
+    function previewNotulenModal(id) {
+        const n = appData.notulen.find(x => x.id === id);
+        if (!n) return;
+        previewDocument('Notulen Resmi', n.nama, `Waktu: ${n.waktu}\nTempat: ${n.tempat}\nNarasumber: ${n.narasumber}\n\nRingkasan Hasil Notulen:\n${n.isi}`, 'MGMP Kab. Sidoarjo');
+    }
+
+    function closePreviewDocModal() {
+        document.getElementById('previewDocModal').classList.add('hidden');
+    }
+
+    function downloadDummyPdf(filename) {
+        // Generates simple dynamic text/blob as download
+        const dummyPdfContent = `%PDF-1.4\n%MGMP INFORMATIKA KABUPATEN SIDOARJO - DOKUMEN RESMI TAHUN 2026\nJudul: ${filename}\nTervalidasi secara elektronik melalui portal MGMP Sidoarjo.`;
+        const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Mengunduh berkas: ${filename}`, 'success');
+    }
+
+    function downloadRekapPdf() {
+        downloadDummyPdf(`Rekapitulasi_Presensi_MGMP_Informatika_Sidoarjo_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toastBox');
+        const txt = document.getElementById('toastMsg');
+        const icon = document.getElementById('toastIcon');
+
+        txt.textContent = msg;
+        if (type === 'success') {
+            icon.className = 'text-emerald-400';
+            icon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+        } else if (type === 'error') {
+            icon.className = 'text-rose-400';
+            icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        } else {
+            icon.className = 'text-cyan-400';
+            icon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+        }
+
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+            toast.classList.add('translate-y-20', 'opacity-0');
+        }, 3200);
+    }
+
+    window.onload = function() {
+        loadDatabase();
+        renderPublicApp();
+        switchTab('pengurus');
+        updateUndanganNotifBadge();
+    };
+</script>
+
+</body>
+</html>
